@@ -11,6 +11,7 @@ const initKeycloak = (onAuthenticatedCallback) => {
   _kc.init({
     onLoad: 'check-sso',
     silentCheckSsoRedirectUri: window.location.origin + '/silent-check-sso.html',
+    flow: 'standard',
     pkceMethod: 'S256',
   })
     .then((authenticated) => {
@@ -22,6 +23,16 @@ const initKeycloak = (onAuthenticatedCallback) => {
     .catch(console.error);
 };
 
+_kc.onTokenExpired = () => {
+  _kc.updateToken().then((authenticated) => {
+    if (!authenticated) {
+      console.log("unable to refresh token!");
+    }
+    else {
+      console.log("token is refreshed!");
+    }
+  })
+};
 const doLogin = _kc.login;
 
 const doLogout = _kc.logout;
